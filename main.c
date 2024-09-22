@@ -2,15 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "stdio.h"
 #include "STRUCTS.h"
 #include "FILA.h"
 #include "PILHA.h"
+#include "colors.h"
+
+/*LEMBRANDO QUE AS FUNÇOES QUE ESTAO EM VERMELHO QUANDO O CODIGO É EXECUTADO NÃO FORAM IMPLEMENTADAS AINDA E AS QUE ESTAO EM AMARELHO NECESSITAM SERES MODIFICADAS AO LONGO DO PROJETO*/ 
 
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia);
 
 void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos);
 
 void header();
+
+void menu();
 
 int main() {
     Fila* emergencias = CriaFila();
@@ -21,13 +27,42 @@ int main() {
 
     Data hora_atual = gerarData(0,0);
     
-    imprimeFila(esperas);
-    imprimeFila(emergencias);
 
-    inserir_voo(esperas, emergencias, rand() % 10);
-    inserir_voo(esperas, emergencias, rand() % 10);
 
-    
+    int op =0;
+    do{
+        menu();
+        scanf("%d",&op);
+
+        switch (op){
+        //chama função inseririr voo
+        case 1:
+            inserir_voo(esperas, emergencias, rand() % 10);
+            break;
+        
+        //chama função autorizar pouso
+        case 2:
+            autorizar_pouso(esperas,emergencias,pousos);
+            break;
+
+        case 3:
+            
+            break;
+        case 4:
+        
+            break;
+        
+        //chama função imprimir fila para a fila pousos
+        case 5:
+            imprimeFila(pousos);
+            break;
+        case 6:   
+
+            break;
+        default:
+            break;
+        }
+    }while (op != 7);
 
     liberaFila(emergencias);
     liberaFila(esperas);
@@ -36,13 +71,29 @@ int main() {
     return 0;
 } 
 
+void menu(){
+    header();
+
+    printf("O que deseja fazer?");
+    printf("\n[1]-Inserir voo");
+    amarelho();
+    printf("\n[2]-Autorizar voo");//completar função 
+    vermelho();
+    printf("\n[3]-Relatorio das aeronaves");//criar função
+    printf("\n[4]-Imprimir proxima aeronova a pousar");//criar função
+    resetcor();
+    printf("\n[5]-Imprimir aeronaves pousadas");
+    vermelho();
+    printf("\n[6]-Simular o pouso dentro de um intervalo de tempo");//criar função 
+    resetcor();
+    printf("\n[7]-Finalizar o sistema");
+    printf("\nOpcao: ")
+}
+
 void header() {
     printf("\n----------\n");
     printf("\tBlueSky\n");
     printf("----------\n");
-}
-void menu(){
-    printf("\n[1] Inserir Voo\n[2] Autorizar Voo\n[3] Imprimir Fila para pouso\n[4] Imprimir o Próximo pouso\n[5] Imprimir Voos que já pousaram\n[6] Simulação de pouso \n");
 }
 
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
@@ -80,6 +131,7 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
     }
 }
 
+//completar função
 void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos) {
     Voo voo_removido;
     if(VaziaFila(emergencias)) {

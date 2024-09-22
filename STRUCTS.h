@@ -46,9 +46,9 @@ void imprimirVoo(Voo voo) {
     }
 }
 
-int compararHoras(Data hora1, Data hora2, int minutos) {
+// int compararHoras(Data hora1, Data hora2, int minutos) {
     
-}
+// }
 
 void printData(Data data) {
     printf("%.2d:%.2d", data.hora, data.minuto);
