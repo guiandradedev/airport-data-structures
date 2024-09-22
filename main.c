@@ -86,7 +86,7 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos) {
         if(!VaziaFila(esperas)) {
             voo_removido = RetiraFila(esperas);
             // verificar se ta atrasado ou nao
-
+            
             
         } else {
             printf("Nao existem voos em espera para pousar\n");
