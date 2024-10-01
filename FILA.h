@@ -13,7 +13,7 @@ int RetiraFila (Fila* f) REMO��O
 
 Fila* liberaFila (Fila* f) LIBERA A FILA
 
-void imprimeFila (Fila* f)IMPRIME A FILA
+void imprimeFila (Fila* f, int check_hora)IMPRIME A FILA
 */
 
 typedef struct fila
@@ -75,7 +75,7 @@ Voo RetiraFila (Fila* f)
     return v;
 }
 
-void imprimeFila (Fila* f)
+void imprimeFila (Fila* f, int check_hora)
 {
     No* q;
     printf("\n\t\t");
@@ -85,7 +85,7 @@ void imprimeFila (Fila* f)
     }else{
         for (q=f->ini; q!=NULL; q=q->prox)
         {
-            imprimirVoo(q->voo);
+            imprimirVoo(q->voo,check_hora);
         }
         printf("\n");
     }
