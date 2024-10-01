@@ -35,7 +35,7 @@ int main() {
     int op =0;
 
     do{
-        menu();
+        menu(hora_atual);
         scanf("%d",&op);
 
         switch (op){
@@ -75,8 +75,11 @@ int main() {
     return 0;
 } 
 
-void menu(){
+void menu(Data hora_atual){
     header();
+
+    printf("Hora atual:");
+    printData(hora_atual);
 
     printf("O que deseja fazer?");
     printf("\n[1]-Inserir voo");
@@ -118,6 +121,7 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
     voo.horario_chegada.hora = NULL;
     voo.horario_chegada.minuto = NULL;
 
+    printf("Previsao de chegada:");
     printData(voo.previsao_chegada);
     
     printf("Eh pouso de emergencia? %c\n", emergencia == 0 ? 'S' : 'N');
@@ -146,10 +150,12 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_a
         voo_removido.check_hora = -1;
     }
 
-    voo_removido.horario_chegada.hora = hora_atual.hora;
-    voo_removido.horario_chegada.minuto = hora_atual.minuto + 10;
+    voo_removido.horario_chegada = hora_atual;
+    voo_removido.horario_chegada.minuto += 10;
 
-    printf("Voo removido!\n");
+    voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
+
+    printf("Voo pousou!\n");
     imprimirVoo(voo_removido, 0);
     InsereFila(pousos, voo_removido);
 }

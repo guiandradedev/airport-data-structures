@@ -68,7 +68,7 @@ Data setHora(int hora, int minuto) {
 }
 
 Data gerarData(int hora_minima, int minuto_minimo) {
-    if(minuto_minimo ==60) {
+    if(minuto_minimo == 60) {
         hora_minima++;
         minuto_minimo = 0;
     }
@@ -80,6 +80,17 @@ Data gerarData(int hora_minima, int minuto_minimo) {
     int minuto = rand() % (60 - minuto_minimo) + minuto_minimo;
 
     return setHora(hora, minuto);
+}
+
+Data verificaHora(Data horario){
+    if(horario.minuto >= 60){
+        horario.hora++;
+    }
+    if(horario.hora >= 24){
+        horario.hora = 0;
+    }
+
+    return horario;
 }
 
 #endif // STRUCTS_H_INCLUDED
