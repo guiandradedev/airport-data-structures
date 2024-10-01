@@ -85,7 +85,7 @@ void imprimeFila (Fila* f, int check_hora)
     }else{
         for (q=f->ini; q!=NULL; q=q->prox)
         {
-            imprimirVoo(q->voo,check_hora);
+            imprimirVoo(q->voo, check_hora);
         }
         printf("\n");
     }
