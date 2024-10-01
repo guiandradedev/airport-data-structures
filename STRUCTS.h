@@ -32,7 +32,7 @@ void imprimirVoo(Voo voo, bool mostra_check_hora) {
     printf("Passageiros: %d\n", voo.num_passageiros);
     printf("Previsao de chegada: ");
     printData(voo.previsao_chegada);
-    if(voo.horario_chegada.hora != NULL && voo.horario_chegada.minuto != NULL) {
+    if(voo.horario_chegada.hora != -1 && voo.horario_chegada.minuto != -1) {
         printf("Horario de chegada: ");
         printData(voo.horario_chegada);
     }
@@ -84,6 +84,7 @@ Data gerarData(int hora_minima, int minuto_minimo) {
 
 Data verificaHora(Data horario){
     if(horario.minuto >= 60){
+        horario.minuto -= 60;
         horario.hora++;
     }
     if(horario.hora >= 24){
@@ -92,5 +93,22 @@ Data verificaHora(Data horario){
 
     return horario;
 }
+
+Data adicionaMinutos(Data horaIni,int minutos){
+    Data horaAdicionada ;
+    horaAdicionada.minuto += horaIni.minuto + minutos;
+    if (horaAdicionada.minuto > 59){
+        do{
+            horaAdicionada.minuto -= 60;
+            horaAdicionada.hora++;
+            if (horaAdicionada.hora == 24)
+                horaAdicionada.hora = 0;
+                
+        }while(horaAdicionada.minuto > 59);
+    }
+     else
+    return horaAdicionada;
+}
+
 
 #endif // STRUCTS_H_INCLUDED

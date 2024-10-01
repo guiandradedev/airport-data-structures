@@ -12,11 +12,13 @@
 
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia);
 
-void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_atual);
+void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual);
 
 void relatorio(Fila *esperas, Fila *emergencias);
 
 void voos_pousados(Fila *pousos);
+
+void proximo_voo(Fila *esperas, Fila *emergencias);
 
 void header();
 
@@ -28,6 +30,7 @@ int main() {
     Fila* pousos = CriaFila();
 
     srand(time(NULL));
+            int minutos_simulacao;
 
     Data hora_atual = gerarData(0,0);
     
@@ -47,21 +50,24 @@ int main() {
         
         //chama função autorizar pouso
         case 2:
-            autorizar_pouso(esperas,emergencias,pousos,hora_atual);
+            autorizar_pouso(esperas,emergencias,pousos, &hora_atual);
             break;
 
         case 3:
             relatorio(esperas,emergencias);
             break;
         case 4:
-        
+            proximo_voo(esperas, emergencias);
             break;
         
         //chama função imprimir fila para a fila pousos
         case 5:
             voos_pousados(pousos);
             break;
-        case 6:   
+        case 6:
+            printf("Informe o Intervalo de tempo desejado para a simulação (em minutos): ");
+            scanf("%d",&minutos_simulacao);
+            simular_voos(esperas,emergencias,&hora_atual,minutos_simulacao);
 
             break;
         default:
@@ -85,7 +91,7 @@ void menu(Data hora_atual){
     printf("O que deseja fazer?");
     printf("\n[1]-Inserir voo");
     amarelho();
-    printf("\n[2]-Autorizar voo");//completar função 
+    printf("\n[2]-Autorizar pouso");
     vermelho();
     printf("\n[3]-Relatorio das aeronaves");//criar função
     printf("\n[4]-Imprimir proxima aeronave a pousar");//criar função
@@ -119,8 +125,8 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
         scanf("%d", &voo.num_passageiros);
     
     voo.previsao_chegada = gerarData(0,0);
-    voo.horario_chegada.hora = NULL;
-    voo.horario_chegada.minuto = NULL;
+    voo.horario_chegada.hora = -1;
+    voo.horario_chegada.minuto = -1;
 
     printf("Previsao de chegada:");
     printData(voo.previsao_chegada);
@@ -135,7 +141,7 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
 }
 
 //completar função
-void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_atual) {
+void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual) {
     Voo voo_removido;
     if(VaziaFila(emergencias)) {
         if(!VaziaFila(esperas)) {
@@ -151,10 +157,13 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_a
         voo_removido.check_hora = -1;
     }
 
-    voo_removido.horario_chegada = hora_atual;
+    voo_removido.horario_chegada = *hora_atual;
     voo_removido.horario_chegada.minuto += 10;
 
     voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
+
+    hora_atual->minuto += 10;
+    *hora_atual = verificaHora(*hora_atual);
 
     printf("Voo pousou!\n");
     imprimirVoo(voo_removido, false);
@@ -170,13 +179,59 @@ void relatorio(Fila *esperas, Fila *emergencias) {
     imprimeFila(esperas, false);
 }
 
-//void simular_voos(Fila*esperas, Fila*emergencias, Data*hora_atual){
+void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo){
+    int qtd_de_voos = minutos_intervalo/10;
+    // Fila* fila_aux = CriaFila();
+    No *aux= emergencias->ini;
+    Voo voo_aux;
 
+    Data *hora_simulada = hora_atual;
 
-//}
+    if(aux != NULL && qtd_de_voos != 0) {
+        printf("Voos em emergencia\n");
+    }
+    while(aux != NULL && qtd_de_voos != 0){
+        imprimirVoo(aux->voo,false);
+        qtd_de_voos--;
+        aux = aux->prox;
+
+        hora_simulada->minuto += 10;
+        *hora_simulada = verificaHora(*hora_simulada);
+    }
+    
+    aux = esperas->ini;
+    if(aux != NULL && qtd_de_voos != 0) {
+        printf("Voos em espera\n");
+    }
+
+    while(aux != NULL && qtd_de_voos != 0){
+        imprimirVoo(aux->voo,false);
+        qtd_de_voos--;
+        aux = aux->prox;
+    }
+}
+
 void voos_pousados(Fila *pousos) {
     header();
 
     printf("Voos que ja pousaram:\n");
-    imprimeFila(pousos,false);
+    imprimeFila(pousos,true);
+}
+
+void proximo_voo(Fila *esperas, Fila *emergencias) {
+    if(!VaziaFila(emergencias)) {
+        printf("Proximo voo a pousar (estado de emergencia)\n");
+        imprimirVoo(emergencias->ini->voo, false);
+        return;
+    }
+    if(!VaziaFila(emergencias)) {
+        printf("Proximo voo a pousar()\n");
+        imprimirVoo(esperas->ini->voo, false);
+        return;
+    }
+    printf("Nenhum voo na fila de espera!\n");
+}
+
+int check_hora(){
+
 }
