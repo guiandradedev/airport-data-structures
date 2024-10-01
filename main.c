@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <time.h>
 #include "STRUCTS.h"
 #include "FILA.h"
@@ -156,7 +157,7 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_a
     voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
 
     printf("Voo pousou!\n");
-    imprimirVoo(voo_removido, 0);
+    imprimirVoo(voo_removido, false);
     InsereFila(pousos, voo_removido);
 }
 
@@ -164,9 +165,9 @@ void relatorio(Fila *esperas, Fila *emergencias) {
     header();
 
     printf("Voos em estado de emergencia:\n");
-    imprimeFila(emergencias, 0);
+    imprimeFila(emergencias, false);
     printf("Voos em lista de espera:\n");
-    imprimeFila(esperas, 0);
+    imprimeFila(esperas, false);
 }
 
 //void simular_voos(Fila*esperas, Fila*emergencias, Data*hora_atual){
@@ -177,5 +178,5 @@ void voos_pousados(Fila *pousos) {
     header();
 
     printf("Voos que ja pousaram:\n");
-    imprimeFila(pousos,0);
+    imprimeFila(pousos,false);
 }

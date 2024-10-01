@@ -20,14 +20,14 @@ typedef struct no
 }No;
 
 // Prototipos
-void imprimirVoo(Voo voo, int check_hora);
+void imprimirVoo(Voo voo, bool mostra_check_hora);
 int compararHoras(Data hora1, Data hora2, int minutos);
 void printData(Data data);
 Data setHora(int hora, int minuto);
 Data gerarData(int hora_minima, int minuto_minimo);
 
 // Funcoes
-void imprimirVoo(Voo voo, int check_hora) {
+void imprimirVoo(Voo voo, bool mostra_check_hora) {
     printf("Codigo: %s\n", voo.codigo);
     printf("Passageiros: %d\n", voo.num_passageiros);
     printf("Previsao de chegada: ");
@@ -37,7 +37,7 @@ void imprimirVoo(Voo voo, int check_hora) {
         printData(voo.horario_chegada);
     }
     printf("\n");
-    if(check_hora != 0) {
+    if(mostra_check_hora) {
         if(voo.check_hora != NULL){
             printf("Sem check_hora");
         }else{
