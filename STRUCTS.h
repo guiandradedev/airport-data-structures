@@ -28,7 +28,7 @@ Data gerarData(int hora_minima, int minuto_minimo);
 
 // Funcoes
 void imprimirVoo(Voo voo, bool mostra_check_hora) {
-    printf("Codigo: %s\n", voo.codigo);
+    printf("\n\t\tCodigo: %s\n", voo.codigo);
     printf("Passageiros: %d\n", voo.num_passageiros);
     printf("Previsao de chegada: ");
     printData(voo.previsao_chegada);
@@ -38,7 +38,7 @@ void imprimirVoo(Voo voo, bool mostra_check_hora) {
     }
     printf("\n");
     if(mostra_check_hora) {
-        if(voo.check_hora != NULL){
+        if(voo.check_hora == NULL){
             printf("Sem check_hora");
         }else{
             if(voo.check_hora == -1){

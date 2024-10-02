@@ -24,6 +24,8 @@ void header();
 
 void menu();
 
+int check_hora(Voo voo);
+
 int main() {
     Fila* emergencias = CriaFila();
     Fila* esperas = CriaFila();
@@ -33,8 +35,6 @@ int main() {
             int minutos_simulacao;
 
     Data hora_atual = gerarData(0,0);
-    
-    
 
     int op =0;
 
@@ -92,13 +92,12 @@ void menu(Data hora_atual){
     printf("\n[1]-Inserir voo");
     amarelho();
     printf("\n[2]-Autorizar pouso");
-    vermelho();
-    printf("\n[3]-Relatorio das aeronaves");//criar função
-    printf("\n[4]-Imprimir proxima aeronave a pousar");//criar função
+    printf("\n[3]-Relatorio das aeronaves");
+    printf("\n[4]-Imprimir proxima aeronave a pousar");
     resetcor();
     printf("\n[5]-Imprimir aeronaves pousadas");
-    vermelho();
-    printf("\n[6]-Simular o pouso dentro de um intervalo de tempo");//criar função 
+    amarelho();
+    printf("\n[6]-Simular o pouso dentro de um intervalo de tempo");
     resetcor();
     printf("\n[7]-Finalizar o sistema");
     printf("\nOpcao: ");
@@ -146,7 +145,12 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_
     if(VaziaFila(emergencias)) {
         if(!VaziaFila(esperas)) {
             voo_removido = RetiraFila(esperas);
-            // verificar se ta atrasado ou nao7
+            voo_removido.horario_chegada = *hora_atual;
+            voo_removido.horario_chegada.minuto += 10;
+            voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
+            *hora_atual = voo_removido.horario_chegada;
+            
+            voo_removido.check_hora = check_hora(voo_removido);
         } else {
             printf("Nao existem voos em espera para pousar\n");
             return;
@@ -157,16 +161,8 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_
         voo_removido.check_hora = -1;
     }
 
-    voo_removido.horario_chegada = *hora_atual;
-    voo_removido.horario_chegada.minuto += 10;
-
-    voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
-
-    hora_atual->minuto += 10;
-    *hora_atual = verificaHora(*hora_atual);
-
     printf("Voo pousou!\n");
-    imprimirVoo(voo_removido, false);
+    imprimirVoo(voo_removido, true);
     InsereFila(pousos, voo_removido);
 }
 
@@ -181,9 +177,7 @@ void relatorio(Fila *esperas, Fila *emergencias) {
 
 void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo){
     int qtd_de_voos = minutos_intervalo/10;
-    // Fila* fila_aux = CriaFila();
     No *aux= emergencias->ini;
-    Voo voo_aux;
 
     Data *hora_simulada = hora_atual;
 
@@ -223,15 +217,22 @@ void proximo_voo(Fila *esperas, Fila *emergencias) {
         printf("Proximo voo a pousar (estado de emergencia)\n");
         imprimirVoo(emergencias->ini->voo, false);
         return;
-    }
-    if(!VaziaFila(emergencias)) {
-        printf("Proximo voo a pousar()\n");
+    }else if(!VaziaFila(esperas)) {
+        printf("Proximo voo a pousar:\n");
         imprimirVoo(esperas->ini->voo, false);
         return;
+    }else{
+        printf("Nenhum voo na fila de espera!\n");
     }
-    printf("Nenhum voo na fila de espera!\n");
 }
 
-int check_hora(){
+int check_hora(Voo voo){
+    int previsao_minutos = (voo.previsao_chegada.hora * 60) + voo.previsao_chegada.minuto;
+    int chegada_minutos = (voo.horario_chegada.hora * 60) + voo.horario_chegada.minuto;
 
+    if(chegada_minutos <= previsao_minutos +10){
+        return 1;
+    }else{
+        return 0;
+    }
 }
