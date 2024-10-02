@@ -29,28 +29,34 @@ Data verificaHora(Data horario);
 
 // Funcoes
 void imprimirVoo(Voo voo, bool mostra_check_hora) {
-    printf("Codigo: %s\n", voo.codigo);
+    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("\n\t\tCodigo: %s\n", voo.codigo);
     printf("Passageiros: %d\n", voo.num_passageiros);
     printf("Previsao de chegada: ");
     printData(voo.previsao_chegada);
-    if(voo.horario_chegada.hora != NULL) {
+    if(voo.horario_chegada.hora != -1 && voo.horario_chegada.minuto != -1) {
         printf("Horario de chegada: ");
         printData(voo.horario_chegada);
     }
     printf("\n");
-    if(mostra_check_hora) {
-        if(voo.check_hora != NULL){
-            printf("Sem check_hora");
-        }else{
+    if(mostra_check_hora){{
             if(voo.check_hora == -1){
-                printf("Pouso de emergencia");
+                vermelho();
+                printf("Pouso de emergencia\n");
+                resetcor();
             }else if(voo.check_hora == 1){
-                printf("Pouso dentro do horario previsto");
+                verde();
+                printf("Pouso sem atraso\n");
+                resetcor();
             }else{
-                printf("Pouso atrasado");
+                amarelho();
+                printf("Pouso atrasado\n");
+                resetcor();
             }
         }  
     }
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+
 }
 
 // int compararHoras(Data hora1, Data hora2, int minutos) {
@@ -85,6 +91,7 @@ Data gerarData(int hora_minima, int minuto_minimo) {
 
 Data verificaHora(Data horario){
     if(horario.minuto >= 60){
+        horario.minuto -= 60;
         horario.hora++;
     }
     if(horario.hora >= 24){
@@ -93,5 +100,23 @@ Data verificaHora(Data horario){
 
     return horario;
 }
+
+Data adicionaMinutos(Data horaIni,int minutos){
+    Data horaAdicionada ;
+    horaAdicionada.minuto += horaIni.minuto + minutos;
+    if (horaAdicionada.minuto > 59){
+        do{
+            horaAdicionada.minuto -= 60;
+            horaAdicionada.hora++;
+            if (horaAdicionada.hora == 24){
+                horaAdicionada.hora = 0;
+            }
+            return horaAdicionada;
+        }while(horaAdicionada.minuto > 59);
+    }
+     else
+    return horaAdicionada;
+}
+
 
 #endif // STRUCTS_H_INCLUDED
