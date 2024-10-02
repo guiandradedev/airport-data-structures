@@ -28,6 +28,7 @@ Data gerarData(int hora_minima, int minuto_minimo);
 
 // Funcoes
 void imprimirVoo(Voo voo, bool mostra_check_hora) {
+    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("\n\t\tCodigo: %s\n", voo.codigo);
     printf("Passageiros: %d\n", voo.num_passageiros);
     printf("Previsao de chegada: ");
@@ -37,19 +38,24 @@ void imprimirVoo(Voo voo, bool mostra_check_hora) {
         printData(voo.horario_chegada);
     }
     printf("\n");
-    if(mostra_check_hora) {
-        if(voo.check_hora == NULL){
-            printf("Sem check_hora");
-        }else{
+    if(mostra_check_hora){{
             if(voo.check_hora == -1){
-                printf("Pouso de emergencia");
+                vermelho();
+                printf("Pouso de emergencia\n");
+                resetcor();
             }else if(voo.check_hora == 1){
-                printf("Pouso dentro do horario previsto");
+                verde();
+                printf("Pouso sem atraso\n");
+                resetcor();
             }else{
-                printf("Pouso atrasado");
+                amarelho();
+                printf("Pouso atrasado\n");
+                resetcor();
             }
         }
     }
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+
 }
 
 // int compararHoras(Data hora1, Data hora2, int minutos) {
@@ -101,9 +107,10 @@ Data adicionaMinutos(Data horaIni,int minutos){
         do{
             horaAdicionada.minuto -= 60;
             horaAdicionada.hora++;
-            if (horaAdicionada.hora == 24)
+            if (horaAdicionada.hora == 24){
                 horaAdicionada.hora = 0;
-                
+            }
+            return horaAdicionada;
         }while(horaAdicionada.minuto > 59);
     }
      else

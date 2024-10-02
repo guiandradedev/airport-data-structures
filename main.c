@@ -24,13 +24,13 @@ void header();
 
 void menu();
 
-int check_hora(Voo voo);
+int check_hora(Data previsao, Data chegada);
 
 int main() {
     Fila* emergencias = CriaFila();
     Fila* esperas = CriaFila();
     Fila* pousos = CriaFila();
-
+//SEMENTE
     srand(time(NULL));
             int minutos_simulacao;
 
@@ -90,13 +90,10 @@ void menu(Data hora_atual){
 
     printf("O que deseja fazer?");
     printf("\n[1]-Inserir voo");
-    amarelho();
     printf("\n[2]-Autorizar pouso");
     printf("\n[3]-Relatorio das aeronaves");
     printf("\n[4]-Imprimir proxima aeronave a pousar");
-    resetcor();
     printf("\n[5]-Imprimir aeronaves pousadas");
-    amarelho();
     printf("\n[6]-Simular o pouso dentro de um intervalo de tempo");
     resetcor();
     printf("\n[7]-Finalizar o sistema");
@@ -104,9 +101,19 @@ void menu(Data hora_atual){
 }
 
 void header() {
-    printf("\n\t----------\n");
-    printf("\tBlueSky\n");
-    printf("\t----------\n");
+    printf("\n--------------------------------------------------------------------------------\n");
+    aviao();
+    printf("--------------------------------------------------------------------------------\n");
+}
+void aviao(){
+    printf("            ______\n");
+    printf("            _\\ _~-\\___\n");
+    printf("    =  = ==(____AA____D        BlueSky \n");
+    printf("                \\_____\\___________________,-~~~~~~~`-.._\n");
+    printf("                /     o O o o o o O O o o o o o o O o  |\\_\n");
+    printf("                `~-.__        ___..----..                  )\n");
+    printf("                      `---~~\\___________/------------`````\n");
+    printf("                      =  ===(_________D\n");
 }
 
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
@@ -150,7 +157,7 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_
             voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
             *hora_atual = voo_removido.horario_chegada;
             
-            voo_removido.check_hora = check_hora(voo_removido);
+            voo_removido.check_hora = check_hora(voo_removido.previsao_chegada, voo_removido.horario_chegada);
         } else {
             printf("Nao existem voos em espera para pousar\n");
             return;
@@ -175,22 +182,30 @@ void relatorio(Fila *esperas, Fila *emergencias) {
     imprimeFila(esperas, false);
 }
 
+
 void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo){
     int qtd_de_voos = minutos_intervalo/10;
     No *aux= emergencias->ini;
 
-    Data *hora_simulada = hora_atual;
+    Data hora_simulada = *hora_atual;
 
     if(aux != NULL && qtd_de_voos != 0) {
         printf("Voos em emergencia\n");
     }
     while(aux != NULL && qtd_de_voos != 0){
         imprimirVoo(aux->voo,false);
+
+        hora_simulada.minuto += 10;
+        hora_simulada = verificaHora(hora_simulada);
+
+        printf("O voo pousaria as: ");
+        printData(hora_simulada);
+        vermelho();
+        printf("Voo em estado de emergencia\n");
+        resetcor();
+
         qtd_de_voos--;
         aux = aux->prox;
-
-        hora_simulada->minuto += 10;
-        *hora_simulada = verificaHora(*hora_simulada);
     }
     
     aux = esperas->ini;
@@ -200,6 +215,18 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
 
     while(aux != NULL && qtd_de_voos != 0){
         imprimirVoo(aux->voo,false);
+
+        hora_simulada.minuto += 10;
+        hora_simulada = verificaHora(hora_simulada);
+        printf("O voo pousaria as: ");
+        printData(hora_simulada);
+        
+        if(check_hora(aux->voo.previsao_chegada,aux->voo.horario_chegada) == 0){
+            printf("O voo vai estar atrasado");
+        }else{
+            printf("O voo nao vai estar atrasado\n");
+        }
+
         qtd_de_voos--;
         aux = aux->prox;
     }
@@ -226,13 +253,13 @@ void proximo_voo(Fila *esperas, Fila *emergencias) {
     }
 }
 
-int check_hora(Voo voo){
-    int previsao_minutos = (voo.previsao_chegada.hora * 60) + voo.previsao_chegada.minuto;
-    int chegada_minutos = (voo.horario_chegada.hora * 60) + voo.horario_chegada.minuto;
+int check_hora(Data previsao, Data chegada){
+    int previsao_minutos = (previsao.hora * 60) + previsao.minuto;
+    int chegada_minutos = (chegada.hora * 60) + chegada.minuto;
 
     if(chegada_minutos <= previsao_minutos +10){
-        return 1;
+        return 1; //no horario
     }else{
-        return 0;
+        return 0; //atrasado
     }
 }
