@@ -78,7 +78,7 @@ Voo RetiraFila (Fila* f)
 void imprimeFila (Fila* f, bool mostra_check_hora)
 {
     No* q;
-    printf("\n\t\t");
+    printf("\n");
     if(VaziaFila(f)){
         mensagem_erro("Não existem voos nessa fila");
         
