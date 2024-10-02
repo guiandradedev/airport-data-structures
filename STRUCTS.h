@@ -25,6 +25,7 @@ int compararHoras(Data hora1, Data hora2, int minutos);
 void printData(Data data);
 Data setHora(int hora, int minuto);
 Data gerarData(int hora_minima, int minuto_minimo);
+Data verificaHora(Data horario);
 
 // Funcoes
 void imprimirVoo(Voo voo, bool mostra_check_hora) {
@@ -52,7 +53,7 @@ void imprimirVoo(Voo voo, bool mostra_check_hora) {
                 printf("Pouso atrasado\n");
                 resetcor();
             }
-        }
+        }  
     }
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 
