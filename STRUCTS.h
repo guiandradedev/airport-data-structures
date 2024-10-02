@@ -26,10 +26,12 @@ void printData(Data data);
 Data setHora(int hora, int minuto);
 Data gerarData(int hora_minima, int minuto_minimo);
 Data verificaHora(Data horario);
+int check_hora(Data previsao, Data chegada);
+void mensagem_erro(char *mensagem);
 
 // Funcoes
 void imprimirVoo(Voo voo, bool mostra_check_hora) {
-    printf("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("\n\t\tCodigo: %s\n", voo.codigo);
     printf("Passageiros: %d\n", voo.num_passageiros);
     printf("Previsao de chegada: ");
@@ -55,7 +57,6 @@ void imprimirVoo(Voo voo, bool mostra_check_hora) {
             }
         }  
     }
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 
 }
 
@@ -117,6 +118,34 @@ Data adicionaMinutos(Data horaIni,int minutos){
      else
     return horaAdicionada;
 }
+int check_hora(Data previsao, Data chegada){
+    int previsao_minutos = (previsao.hora * 60) + previsao.minuto;
+    int chegada_minutos = (chegada.hora * 60) + chegada.minuto;
 
+    if(chegada_minutos <= previsao_minutos +10){
+        return 1; //no horario
+    }else{
+        return 0; //atrasado
+    }
+}
+
+void mensagem_erro(char* mensagem) {
+    vermelho();
+    printf("%s\n", mensagem);
+    resetcor();
+}
+
+void mensagem_sucesso(char*mensagem){
+    verde();
+    printf("%s\n", mensagem);
+    resetcor();
+}
+
+void fimFuncao() {
+    fflush(stdin);
+    printf("Pressione Enter para continuar...\n");
+    getchar();
+    system("cls");
+}
 
 #endif // STRUCTS_H_INCLUDED
