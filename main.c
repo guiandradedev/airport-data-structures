@@ -12,7 +12,7 @@
 
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia);
 
-void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_atual);
+void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual);
 
 void relatorio(Fila *esperas, Fila *emergencias);
 
@@ -47,7 +47,7 @@ int main() {
         
         //chama função autorizar pouso
         case 2:
-            autorizar_pouso(esperas,emergencias,pousos,hora_atual);
+            autorizar_pouso(esperas,emergencias,pousos, &hora_atual);
             break;
 
         case 3:
@@ -106,7 +106,6 @@ void header() {
 
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
     Voo voo;
-    Data data;
     
     header();
     fflush(stdin);
@@ -119,13 +118,15 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
         scanf("%d", &voo.num_passageiros);
     
     voo.previsao_chegada = gerarData(0,0);
-    voo.horario_chegada.hora = NULL;
-    voo.horario_chegada.minuto = NULL;
 
     printf("Previsao de chegada:");
     printData(voo.previsao_chegada);
     
     printf("Eh pouso de emergencia? %c\n", emergencia == 0 ? 'S' : 'N');
+
+    voo.horario_chegada.hora = NULL;
+    voo.horario_chegada.minuto = NULL;
+    voo.check_hora = NULL;
 
     if(emergencia == 0) {
         InsereFila(emergencias, voo);
@@ -135,7 +136,7 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia) {
 }
 
 //completar função
-void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_atual) {
+void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual) {
     Voo voo_removido;
     if(VaziaFila(emergencias)) {
         if(!VaziaFila(esperas)) {
@@ -151,10 +152,15 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data hora_a
         voo_removido.check_hora = -1;
     }
 
-    voo_removido.horario_chegada = hora_atual;
+    //acrescenta 10 minutos ao horario de chegada em relação ao horario atual, uma vez que o aviao demora 10min para pousar 
+    voo_removido.horario_chegada = *hora_atual;
     voo_removido.horario_chegada.minuto += 10;
 
+    //verifica se horario de chegada esta dentro dos valores corretos
     voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
+
+    hora_atual->minuto += 10;
+    *hora_atual = verificaHora(*hora_atual);
 
     printf("Voo pousou!\n");
     imprimirVoo(voo_removido, false);
