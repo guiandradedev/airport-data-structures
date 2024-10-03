@@ -349,9 +349,9 @@ void busca_voo(Fila *esperas, Fila *emergencias, Fila *pousos) {
 }
 char* insere_codigo(){
     char *codigo = malloc(5*sizeof(char));
-    fflush(stdin);
 
     do {
+        fflush(stdin);
         printf("Insira o codigo do voo (4 caracteres comecando com V):\n");
         fgets(codigo, 5, stdin);
 
