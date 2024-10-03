@@ -80,7 +80,7 @@ void imprimeFila (Fila* f, bool mostra_check_hora)
     No* q;
     printf("\n");
     if(VaziaFila(f)){
-        mensagem_erro("Não existem voos nessa fila");
+        mensagem_erro("Nao existem voos nessa fila");
         
     }else{
         for (q=f->ini; q!=NULL; q=q->prox)

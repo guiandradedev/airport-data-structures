@@ -142,7 +142,7 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_at
         fgets(voo.codigo, sizeof(voo.codigo), stdin);
 
         if (strlen(voo.codigo) != 4) {
-            mensagem_erro("O código deve ter 4 caracteres!");
+            mensagem_erro("O codigo deve ter 4 caracteres!");
         }
     } while (strlen(voo.codigo) != 4);
     fflush(stdin);
@@ -223,6 +223,7 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
 
     if(aux != NULL && qtd_de_voos != 0) {
         existe_voo = true;
+        printf("\n\n");
         printf("Voos em emergencia\n");
     }
     while(aux != NULL && qtd_de_voos != 0){
@@ -244,6 +245,7 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
     aux = esperas->ini;
     if(aux != NULL && qtd_de_voos != 0) {
         existe_voo = true;
+        printf("\n\n");
         printf("Voos em espera\n");
     }
 
