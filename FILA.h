@@ -16,12 +16,6 @@ Fila* liberaFila (Fila* f) LIBERA A FILA
 void imprimeFila (Fila* f, int check_hora)IMPRIME A FILA
 */
 
-typedef struct fila
-{
-    No * ini;
-    No * fim;
-} Fila;
-
 int VaziaFila (Fila* f)
 {
     if (f->ini==NULL) return 1;
