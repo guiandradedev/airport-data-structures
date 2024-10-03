@@ -12,11 +12,15 @@
 // Protótipos
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_atual, Fila *pousos);
 void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual);
-void busca_voo(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual);
+void busca_voo(Fila *esperas, Fila *emergencias, Fila *pousos);
 void relatorio(Fila *esperas, Fila *emergencias, Data *hora_atual);
 void voos_pousados(Fila *pousos, Data *hora_atual);
-void proximo_voo(Fila *esperas, Fila *emergencias, Data *hora_atual);
+void proximo_voo(Fila *esperas, Fila *emergencias);
 void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo);
+char* insere_codigo();
+void alterar_status(Fila *esperas, Fila *emergencias);
+void estatisticas(Fila *pousos);
+void estatisticas(Fila *pousos);
 void aviao(Data *data);
 void header(Data* data);
 void menu();
@@ -56,7 +60,7 @@ int main() {
             relatorio(esperas,emergencias, &hora_atual);
             break;
         case 4:
-            proximo_voo(esperas, emergencias, &hora_atual);
+            proximo_voo(esperas, emergencias);
             break;
         case 5:
             voos_pousados(pousos, &hora_atual);
@@ -67,16 +71,22 @@ int main() {
             simular_voos(esperas,emergencias,&hora_atual,aux);
             break;
         case 7:
-            busca_voo(esperas, emergencias, pousos, &hora_atual);
+            busca_voo(esperas, emergencias, pousos);
             break;
         case 8:
+            alterar_status(esperas,emergencias);
+            break;
+        case 9:
+            estatisticas(pousos);
+            break;
+        case 10:
             break;
         default:
             mensagem_erro("Comando incorreto.");
             fimFuncao();
             break;
         }
-    }while (op != 8);
+    }while (op != 10);
 
     header(&hora_atual);
     mensagem_sucesso("Obrigado por acessar o sistema.");
@@ -93,14 +103,16 @@ void menu(Data hora_atual){
     header(&hora_atual);
 
     printf("O que deseja fazer?");
-    printf("\n[1]-Inserir voo");
-    printf("\n[2]-Autorizar pouso");
-    printf("\n[3]-Relatorio das aeronaves");
-    printf("\n[4]-Imprimir proxima aeronave a pousar");
-    printf("\n[5]-Imprimir aeronaves pousadas");
-    printf("\n[6]-Simular o pouso dentro de um intervalo de tempo");
-    printf("\n[7]-Buscar voo por codigo");
-    printf("\n[8]-Finalizar o sistema");
+    printf("\n[1]- Inserir voo");
+    printf("\n[2]- Autorizar pouso");
+    printf("\n[3]- Relatorio das aeronaves");
+    printf("\n[4]- Imprimir proxima aeronave a pousar");
+    printf("\n[5]- Imprimir aeronaves pousadas");
+    printf("\n[6]- Simular o pouso dentro de um intervalo de tempo");
+    printf("\n[7]- Buscar voo por codigo");
+    printf("\n[8]- Alterar estado de um voo (espera->emergengia)");
+    printf("\n[9]- Estatisticas do aeroporto");
+    printf("\n[10]- Finalizar o sistema");
     printf("\nOpcao: ");
 }
 
@@ -289,7 +301,7 @@ void voos_pousados(Fila *pousos, Data *hora_atual) {
     fimFuncao();
 }
 
-void proximo_voo(Fila *esperas, Fila *emergencias, Data *hora_atual) {
+void proximo_voo(Fila *esperas, Fila *emergencias) {
     if(!VaziaFila(emergencias)) {
         printf("Proximo voo a pousar (estado de emergencia)\n");
         imprimirVoo(emergencias->ini->voo, false);
@@ -302,14 +314,46 @@ void proximo_voo(Fila *esperas, Fila *emergencias, Data *hora_atual) {
     fimFuncao();
 }
 
-void busca_voo(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual) {
-    char codigo[5];
+void busca_voo(Fila *esperas, Fila *emergencias, Fila *pousos) {
     Voo *voo;
+    char *codigo;
+
 
     fflush(stdin);
+    codigo = insere_codigo();
+
+    voo = busca_fila(esperas,codigo);
+    if(voo == NULL){
+        voo = busca_fila(emergencias,codigo);
+    }else{
+        imprimirVoo(*voo, false);
+        fimFuncao();
+        return;
+    }
+
+    if(voo == NULL){
+        voo = busca_fila(pousos,codigo);
+    }else{
+        imprimirVoo(*voo, false);
+        fimFuncao();
+        return;
+    }
+
+    if(voo == NULL){
+        mensagem_erro("O voo nao existe\n");
+    }else{
+        imprimirVoo(*voo, false);
+        fimFuncao();
+        return;
+    }
+}
+char* insere_codigo(){
+    char *codigo = malloc(5*sizeof(char));
+    fflush(stdin);
+
     do {
         printf("Insira o codigo do voo (4 caracteres comecando com V):\n");
-        fgets(codigo, sizeof(codigo), stdin);
+        fgets(codigo, 5, stdin);
 
         if (strlen(codigo) != 4) {
             mensagem_erro("O codigo deve ter 4 caracteres!");
@@ -325,20 +369,65 @@ void busca_voo(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual)
             mensagem_erro("O codigo deve ter 4 caracteres!");
         }
     } while (strlen(codigo) != 4 || codigo[0] != 'V');
+    return codigo;
+}
 
-    if(voo = busca_fila(esperas, codigo)) {
-        imprimirVoo(*voo, false);
-        return;
+void alterar_status(Fila *esperas, Fila *emergencias){
+    char *codigo;
+    bool achou = false; 
+    Fila *aux = CriaFila();
+    codigo = insere_codigo();
+
+    while (!VaziaFila(esperas)){
+        if(strcmp(esperas->ini->voo.codigo, codigo) == 0){
+            InsereFila(emergencias, RetiraFila(esperas));
+            achou = true;
+        }else{
+            InsereFila(aux, RetiraFila(esperas));
+        }
     }
-    if(voo = busca_fila(emergencias, codigo)) {
-        imprimirVoo(*voo, false);
-        return;
+    
+    if(achou){
+        mensagem_sucesso("Voo transferido para emergencia com sucesso");
+    }else{
+        mensagem_erro("Voo nao encontrado ou ja pousou");
     }
-    if(voo = busca_fila(pousos, codigo)) {
-        imprimirVoo(*voo, false);
-        return;
+    
+    if(VaziaFila(esperas)){
+        esperas->ini = aux->ini;
+        esperas->fim = aux->fim;
     }
-    // ja volto
-    mensagem_erro("Voo nao encontrado");
+
+    free(aux);
+    fimFuncao();
+}
+
+void estatisticas(Fila *pousos){
+    int p_totais = 0;
+    int p_emer_totais = 0;
+    int passageiros_totais = 0;
+    float passageiros_por_voo = 0;
+
+    No *aux = pousos->ini;
+
+    if(VaziaFila(pousos)){
+        mensagem_erro("Nenhum aviao pousou ainda");
+    }else{
+        while(aux != NULL){
+            if(aux->voo.check_hora == -1){
+                p_emer_totais++;
+            }
+            passageiros_totais +=  aux->voo.num_passageiros;
+            p_totais++;
+            aux = aux->prox;
+        }
+
+        passageiros_por_voo = (float)passageiros_totais/p_totais;
+
+        printf("\nQuantidade de pousos feitos: %d\n", p_totais);
+        printf("Pousos de emergencia: %d\n", p_emer_totais);
+        printf("Passageiros que passaram pelo aeroporto: %d\n", passageiros_totais);
+        printf("Passageiros por voo: %.2f\n",passageiros_por_voo);
+    }
     fimFuncao();
 }

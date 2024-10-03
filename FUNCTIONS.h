@@ -81,22 +81,22 @@ Data verificaHora(Data horario){
     return horario;
 }
 
-Data adicionaMinutos(Data horaIni,int minutos){
-    Data horaAdicionada ;
-    horaAdicionada.minuto += horaIni.minuto + minutos;
-    if (horaAdicionada.minuto > 59){
-        do{
-            horaAdicionada.minuto -= 60;
-            horaAdicionada.hora++;
-            if (horaAdicionada.hora == 24){
-                horaAdicionada.hora = 0;
-            }
-            return horaAdicionada;
-        }while(horaAdicionada.minuto > 59);
-    }
-     else
-    return horaAdicionada;
-}
+// Data adicionaMinutos(Data horaIni,int minutos){
+//     Data horaAdicionada ;
+//     horaAdicionada.minuto += horaIni.minuto + minutos;
+//     if (horaAdicionada.minuto > 59){
+//         do{
+//             horaAdicionada.minuto -= 60;
+//             horaAdicionada.hora++;
+//             if (horaAdicionada.hora == 24){
+//                 horaAdicionada.hora = 0;
+//             }
+//             return horaAdicionada;
+//         }while(horaAdicionada.minuto > 59);
+//     }
+//      else
+//     return horaAdicionada;
+// }
 int check_hora(Data previsao, Data chegada){
     int previsao_minutos = (previsao.hora * 60) + previsao.minuto;
     int chegada_minutos = (chegada.hora * 60) + chegada.minuto;
@@ -150,15 +150,16 @@ Voo* busca_fila(Fila *fila, char *codigo) {
     Fila* aux = CriaFila();
     Voo* voo = NULL;
 
-    while(!VaziaFila(fila) && strcmp(fila->ini->voo.codigo, codigo) != 0) {
+    while(!VaziaFila(fila)) {
         if(strcmp(fila->ini->voo.codigo, codigo) == 0) {
-            *voo = fila->ini->voo;
+            voo = &fila->ini->voo;
         }
         InsereFila(aux, RetiraFila(fila));
     }
-
-    fila->ini = aux->ini;
-    fila->fim = aux->fim;
+    if(VaziaFila(fila)){
+        fila->ini = aux->ini;
+        fila->fim = aux->fim;
+    } 
     free(aux);
     return voo;
 }
