@@ -81,22 +81,6 @@ Data verificaHora(Data horario){
     return horario;
 }
 
-// Data adicionaMinutos(Data horaIni,int minutos){
-//     Data horaAdicionada ;
-//     horaAdicionada.minuto += horaIni.minuto + minutos;
-//     if (horaAdicionada.minuto > 59){
-//         do{
-//             horaAdicionada.minuto -= 60;
-//             horaAdicionada.hora++;
-//             if (horaAdicionada.hora == 24){
-//                 horaAdicionada.hora = 0;
-//             }
-//             return horaAdicionada;
-//         }while(horaAdicionada.minuto > 59);
-//     }
-//      else
-//     return horaAdicionada;
-// }
 int check_hora(Data previsao, Data chegada){
     int previsao_minutos = (previsao.hora * 60) + previsao.minuto;
     int chegada_minutos = (chegada.hora * 60) + chegada.minuto;

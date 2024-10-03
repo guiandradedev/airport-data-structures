@@ -10,20 +10,20 @@
 #include "FUNCTIONS.h"
 
 // Protótipos
-void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_atual, Fila *pousos);
-void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual);
+void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_atual, Fila *pousos, int TempoPouso);
+void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual, int TempoPouso);
 void busca_voo(Fila *esperas, Fila *emergencias, Fila *pousos);
-void relatorio(Fila *esperas, Fila *emergencias, Data *hora_atual);
-void voos_pousados(Fila *pousos, Data *hora_atual);
+void relatorio(Fila *esperas, Fila *emergencias, Data *hora_atual, int TempoPouso);
+void voos_pousados(Fila *pousos, Data *hora_atual, int TempoPouso);
 void proximo_voo(Fila *esperas, Fila *emergencias);
-void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo);
+void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo, int TempoPouso);
 char* insere_codigo();
 void alterar_status(Fila *esperas, Fila *emergencias);
 void estatisticas(Fila *pousos);
 void estatisticas(Fila *pousos);
 void aviao(Data *data);
-void header(Data* data);
-void menu();
+void header(Data *data,int tempo);
+void menu(Data hora_atual, int tempo);
 
 int main() {
     // Definição de variaveis
@@ -32,9 +32,10 @@ int main() {
     Fila* pousos = CriaFila();
     Data hora_atual;
     int semente, aux, op = 0;
+    int TempoPouso = NULL;
 
     do {
-        header(NULL);
+        header(NULL,NULL);
         printf("Para comecar, insira a semente: ");
         scanf("%d", &semente);
 
@@ -44,31 +45,37 @@ int main() {
     } while(semente < 0);
     srand(semente);
     hora_atual = gerarData(0,0);
+    TempoPouso = geraTempoPouso();
 
     do{
-        menu(hora_atual);
+        menu(hora_atual,TempoPouso);
         scanf("%d",&op);
 
         switch (op){
         case 1:
-            inserir_voo(esperas, emergencias, rand() % 10, &hora_atual, pousos);
+            inserir_voo(esperas, emergencias, rand() % 10, &hora_atual, pousos, TempoPouso);
             break;
         case 2:
-            autorizar_pouso(esperas,emergencias,pousos, &hora_atual);
+            autorizar_pouso(esperas,emergencias,pousos, &hora_atual, TempoPouso);
             break;
         case 3:
-            relatorio(esperas,emergencias, &hora_atual);
+            relatorio(esperas,emergencias, &hora_atual, TempoPouso);
             break;
         case 4:
             proximo_voo(esperas, emergencias);
             break;
         case 5:
-            voos_pousados(pousos, &hora_atual);
+            voos_pousados(pousos, &hora_atual, TempoPouso);
             break;
         case 6:
-            printf("Informe o Intervalo de tempo desejado para a simulacao (em minutos): ");
-            scanf("%d",&aux);
-            simular_voos(esperas,emergencias,&hora_atual,aux);
+            do{
+                printf("Informe o Intervalo de tempo desejado para a simulacao (em minutos): ");
+                scanf("%d",&aux);
+                if(aux == 0){
+                    mensagem_erro("Tempo para simulacao deve ser maior que 0");
+                }
+            }while(aux <= 0);
+            simular_voos(esperas,emergencias,&hora_atual,aux, TempoPouso);
             break;
         case 7:
             busca_voo(esperas, emergencias, pousos);
@@ -80,15 +87,18 @@ int main() {
             estatisticas(pousos);
             break;
         case 10:
+            MudaTempo(&TempoPouso);
+            break;
+        case 11:
             break;
         default:
             mensagem_erro("Comando incorreto.");
             fimFuncao();
             break;
         }
-    }while (op != 10);
+    }while (op != 11);
 
-    header(&hora_atual);
+    header(&hora_atual, TempoPouso);
     mensagem_sucesso("Obrigado por acessar o sistema.");
 
     liberaFila(emergencias);
@@ -98,27 +108,90 @@ int main() {
     return 0;
 } 
 
-// Implementação das funções
-void menu(Data hora_atual){
-    header(&hora_atual);
 
-    printf("O que deseja fazer?");
-    printf("\n[1]- Inserir voo");
-    printf("\n[2]- Autorizar pouso");
-    printf("\n[3]- Relatorio das aeronaves");
-    printf("\n[4]- Imprimir proxima aeronave a pousar");
-    printf("\n[5]- Imprimir aeronaves pousadas");
-    printf("\n[6]- Simular o pouso dentro de um intervalo de tempo");
-    printf("\n[7]- Buscar voo por codigo");
-    printf("\n[8]- Alterar estado de um voo (espera->emergengia)");
-    printf("\n[9]- Estatisticas do aeroporto");
-    printf("\n[10]- Finalizar o sistema");
+int geraTempoPouso(){
+// 0-Clima bom(10 minutos por pouso)45%
+// 1-Clima decente(15 minutos por pouso)30%
+// 2-Clima ruim(20 minutos por pouso)15%
+// 3-Clima pessimo(30 minutos por pouso)10%
+    int r = rand() % 100;
+
+    if(r < 45) {
+        return 10; // 45% de chance
+    } else if (r < 75) {
+        return 15; // 30% de chance
+    } else if (r < 90) {
+        return 20; // 15% de chance 
+    } else {
+        return 30; // 10% de chance 
+    }
+}
+
+void print_clima(int TempoPouso){
+    if(TempoPouso == NULL){
+        return;
+    }else if(TempoPouso == 10){
+        mensagem_sucesso("Clima esta bom, com tempo medio de pouso de 10 minutos\n");
+    }else if(TempoPouso == 15){
+        mensagem_amarela("Clima esta decente, com tempo medio de pouso de 15 minutos\n");
+    }else if(TempoPouso == 20){
+        mensagem_erro("Clima esta ruim, com tempo medio de pouso de 20 minutos\n");
+    }else{
+        mensagem_erro("Clima esta pessimo, com tempo medio de pouso de 30 minutos\n");
+    }
+}
+
+void menuMudaTempo(){
+    printf("Como esta o clima?\n");
+    printf("[1]-Clima esta bom\n");
+    printf("[2]-Clima esta decente\n");
+    printf("[3]-Clima esta ruim\n");
+    printf("[4]-Clima esta pessimo\n");
+    printf("opcao: ");
+}
+
+void MudaTempo(int *TempoPouso){
+    menuMudaTempo();
+    int op;
+    do{
+        scanf("%d", &op);
+    } while (op < 1 || op >4);
+    
+    switch (op){
+        case 1:
+            *TempoPouso = 10;
+            break;
+        case 2:
+            *TempoPouso = 15;
+            break;
+        case 3:
+            *TempoPouso = 20;
+            break;
+        case 4:
+            *TempoPouso = 30;
+            break;
+        default:
+            break;
+    }
+}
+
+void menu(Data hora_atual, int tempo){
+    header(&hora_atual, tempo);
+
+    printf("O que deseja fazer?\n");
+    printf("[1]  - Inserir voo                  [7]  - Buscar voo por codigo\n");
+    printf("[2]  - Autorizar pouso              [8]  - Alterar estado de um voo\n");
+    printf("[3]  - Relatorio das aeronaves      [9]  - Estatisticas do aeroporto\n");
+    printf("[4]  - Imprimir proxima aeronave    [10] - Alterar o clima\n");
+    printf("[5]  - Imprimir aeronaves pousadas  [11] - Finalizar o sistema\n");
+    printf("[6]  - Simular o pouso\n");
     printf("\nOpcao: ");
 }
 
-void header(Data *data) {
+void header(Data *data,int tempo) {
     printf("\n--------------------------------------------------------------------------------\n");
     aviao(data);
+    print_clima(tempo);
     printf("--------------------------------------------------------------------------------\n");
 }
 void aviao(Data *data){
@@ -138,12 +211,12 @@ void aviao(Data *data){
     }
 }
 
-void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_atual, Fila *pousos) {
+void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_atual, Fila *pousos, int TempoPouso) {
     Voo voo;
     char codigo[5];
     bool existe = false;
 
-    header(hora_atual);
+    header(hora_atual, TempoPouso);
     fflush(stdin);
 
     do {
@@ -195,13 +268,14 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_at
     fimFuncao();
 }
 
-void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual) {
+void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual, int TempoPouso) {
     Voo voo_removido;
     if(VaziaFila(emergencias)) {
         if(!VaziaFila(esperas)) {
             voo_removido = RetiraFila(esperas);
+
             voo_removido.horario_chegada = *hora_atual;
-            voo_removido.horario_chegada.minuto += 10;
+            voo_removido.horario_chegada.minuto += TempoPouso;
             voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
             *hora_atual = voo_removido.horario_chegada;
             
@@ -214,6 +288,11 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_
     } else {
         voo_removido = RetiraFila(emergencias);
         voo_removido.check_hora = -1;
+
+        voo_removido.horario_chegada = *hora_atual;
+        voo_removido.horario_chegada.minuto += TempoPouso;
+        voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
+        *hora_atual = voo_removido.horario_chegada;
     }
 
     printf("Voo pousou!\n");
@@ -222,8 +301,8 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_
     fimFuncao();
 }
 
-void relatorio(Fila *esperas, Fila *emergencias, Data *hora_atual) {
-    header(hora_atual);
+void relatorio(Fila *esperas, Fila *emergencias, Data *hora_atual, int TempoPouso) {
+    header(hora_atual, TempoPouso);
 
     mensagem_erro("Voos em estado de emergencia:");
     imprimeFila(emergencias, false);
@@ -235,8 +314,8 @@ void relatorio(Fila *esperas, Fila *emergencias, Data *hora_atual) {
     fimFuncao();
 }
 
-void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo){
-    int qtd_de_voos = minutos_intervalo/10;
+void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_intervalo, int TempoPouso){
+    int qtd_de_voos = minutos_intervalo/TempoPouso;
     No *aux= emergencias->ini;
     bool existe_voo=false;
 
@@ -250,7 +329,7 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
     while(aux != NULL && qtd_de_voos != 0){
         imprimirVoo(aux->voo,false);
 
-        hora_simulada.minuto += 10;
+        hora_simulada.minuto += TempoPouso;
         hora_simulada = verificaHora(hora_simulada);
 
         printf("O voo pousaria as: ");
@@ -271,7 +350,7 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
     while(aux != NULL && qtd_de_voos != 0){
         imprimirVoo(aux->voo,false);
 
-        hora_simulada.minuto += 10;
+        hora_simulada.minuto += TempoPouso;
         hora_simulada = verificaHora(hora_simulada);
 
         printf("O voo pousaria as: ");
@@ -293,8 +372,8 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
     fimFuncao();
 }
 
-void voos_pousados(Fila *pousos, Data *hora_atual) {
-    header(hora_atual);
+void voos_pousados(Fila *pousos, Data *hora_atual, int TempoPouso) {
+    header(hora_atual, TempoPouso);
 
     printf("Voos que ja pousaram:\n");
     imprimeFila(pousos,true);
