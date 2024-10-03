@@ -31,12 +31,12 @@ int main() {
     Fila* emergencias = CriaFila();
     Fila* esperas = CriaFila();
     Fila* pousos = CriaFila();
-    Data hora_atual = gerarData(0,0);
+    Data hora_atual;
 
     int semente, aux, op = 0;
 //SEMENTE
     do {
-        header(&hora_atual);
+        header(NULL);
         printf("Para começar, insira a semente: ");
         scanf("%d", &semente);
 
@@ -45,6 +45,7 @@ int main() {
         }
     } while(semente < 0);
     srand(semente);
+    hora_atual = gerarData(0,0);
 
     do{
         menu(hora_atual);
@@ -285,11 +286,9 @@ void proximo_voo(Fila *esperas, Fila *emergencias, Data *hora_atual) {
     if(!VaziaFila(emergencias)) {
         printf("Proximo voo a pousar (estado de emergencia)\n");
         imprimirVoo(emergencias->ini->voo, false);
-        return;
     }else if(!VaziaFila(esperas)) {
         printf("Proximo voo a pousar:\n");
         imprimirVoo(esperas->ini->voo, false);
-        return;
     }else{
         mensagem_erro("Nenhum voo na fila de espera!");
     }
