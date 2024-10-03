@@ -9,6 +9,7 @@
 #include "FILA.h"
 #include "FUNCTIONS.h"
 
+
 // Protótipos
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_atual, Fila *pousos, int TempoPouso);
 void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_atual, int TempoPouso);
@@ -21,6 +22,10 @@ char* insere_codigo();
 void alterar_status(Fila *esperas, Fila *emergencias);
 void estatisticas(Fila *pousos);
 void estatisticas(Fila *pousos);
+void print_clima(int TempoPouso);
+int geraTempoPouso();
+void menuMudaTempo();
+void MudaTempo(int *TempoPouso);
 void aviao(Data *data);
 void header(Data *data,int tempo);
 void menu(Data hora_atual, int tempo);
@@ -33,6 +38,8 @@ int main() {
     Data hora_atual;
     int semente, aux, op = 0;
     int TempoPouso = NULL;
+
+    animacao();
 
     do {
         header(NULL,NULL);
@@ -97,6 +104,8 @@ int main() {
             break;
         }
     }while (op != 11);
+
+    animacao();
 
     header(&hora_atual, TempoPouso);
     mensagem_sucesso("Obrigado por acessar o sistema.");

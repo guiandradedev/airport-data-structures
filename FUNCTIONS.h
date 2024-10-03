@@ -1,6 +1,8 @@
 #ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED 
 
+#define LARGURA 40
+#define TAMANHO_AVIAO 8
 
 // Prototipos
 void imprimirVoo(Voo voo, bool mostra_check_hora);
@@ -16,6 +18,8 @@ void mensagem_sucesso(char*mensagem);
 bool codigo_existe(Fila *emergencias, Fila *esperas, Fila *pousos, char *codigo);
 bool existe_fila(Fila *aux_fila, char *codigo);
 Voo* busca_fila(Fila *fila, char *codigo);
+void animacao();
+void desenharAviao(int espacos, int linhas_visiveis);
 
 
 // Funcoes
@@ -146,6 +150,57 @@ Voo* busca_fila(Fila *fila, char *codigo) {
     } 
     free(aux);
     return voo;
+}
+
+void animacao(){
+    for (int i = 0; i < LARGURA; i++) {
+    printf("\033[H\033[J");
+    
+    int linhas_visiveis = TAMANHO_AVIAO;
+    if (i > LARGURA - TAMANHO_AVIAO) {
+        linhas_visiveis = TAMANHO_AVIAO - (i - (LARGURA - TAMANHO_AVIAO));
+    }
+    
+    desenharAviao(i, linhas_visiveis);
+    fflush(stdout);
+    usleep(100000);
+    }
+}
+
+void desenharAviao(int espacos, int linhas_visiveis) {
+    // Desenha o avião com um deslocamento
+    if (linhas_visiveis >= 1) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("            ______\n");
+    }
+    if (linhas_visiveis >= 2) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("            _\\ _~-\\___\n");
+    }
+    if (linhas_visiveis >= 3) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("    =  = ==(____AA____D      BlueSky\n");
+    }
+    if (linhas_visiveis >= 4) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("                \\_____\\___________________,-~~~~~~~`-.._\n");
+    }
+    if (linhas_visiveis >= 5) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("                /     o O o o o o O O o o o o o o O o  |\\_\n");
+    }
+    if (linhas_visiveis >= 6) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("                `~-.__        ___..----..                  )\n");
+    }
+    if (linhas_visiveis >= 7) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("                      `---~~\\___________/------------`````\n");
+    }
+    if (linhas_visiveis >= 8) {
+        for (int i = 0; i < espacos; i++) printf(" ");
+        printf("                      =  ===(_________D\n");
+    }
 }
 
 #endif // STRUCTS_H_INCLUDED
