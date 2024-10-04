@@ -21,7 +21,6 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
 char* insere_codigo();
 void alterar_status(Fila *esperas, Fila *emergencias);
 void estatisticas(Fila *pousos);
-void estatisticas(Fila *pousos);
 void print_clima(int TempoPouso);
 int geraTempoPouso();
 void menuMudaTempo();
