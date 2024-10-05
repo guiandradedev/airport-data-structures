@@ -518,3 +518,11 @@ void estatisticas(Fila *pousos){
     }
     fimFuncao();
 }
+
+void menuRelatorio(){
+    printf("\nEscolha um filtro:");
+    printf("\n[1]-Voos ja atrasados");
+    printf("\n[2]-Voos em estado de emergencia")
+    printf("\n[3]-Voos em espera");
+    printf("\n[4]-Voos ");
+}
