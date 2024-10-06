@@ -28,7 +28,7 @@ void MudaTempo(int *TempoPouso);
 void aviao(Data *data);
 void header(Data *data,int tempo);
 void menu(Data hora_atual, int tempo);
-void menuFiltro(Fila *esperas, Fila *emergencias, Fila* pousos, Data *hora_atual);
+void menuFiltro(Fila *esperas, Fila *emergencias, Fila* pousos, Data *hora_atual, int TempoPouso);
 
 int main() {
     // Definição de variaveis
@@ -60,7 +60,7 @@ int main() {
 
         switch (op){
         case 1:
-            inserir_voo(esperas, emergencias, rand() % 10, &hora_atual, pousos, TempoPouso);
+            inserir_voo(esperas, emergencias, rand() % 6, &hora_atual, pousos, TempoPouso);
             break;
         case 2:
             autorizar_pouso(esperas,emergencias,pousos, &hora_atual, TempoPouso);
@@ -97,7 +97,7 @@ int main() {
             MudaTempo(&TempoPouso);
             break;
         case 11:
-            menuFiltro(esperas,emergencias,pousos,&hora_atual);
+            menuFiltro(esperas,emergencias,pousos,&hora_atual,TempoPouso);
             break;
         case 12:
             break;
@@ -523,7 +523,7 @@ void estatisticas(Fila *pousos){
     fimFuncao();
 }
 
-void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
+void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, int tempoPouso){
     bool isLate = false;
     bool isEmergency = false;
     bool isWaiting = false;
@@ -532,8 +532,8 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
     int select;
     do{
         printf("\n Faca a escolha dos Filtros, quando nao quiser mais filtros digite -1:");
-        printf("\n[1]-Voos ja atrasados para o pouso");
-        printf("\n[2]-Voos em estado de emergencia para pousar");
+        printf("\n[1]-Voos Atrasados");
+        printf("\n[2]-Voos em estado de emergencia");
         printf("\n[3]-Voos em espera para pouso");
         printf("\n[4]-Voos pousados\n");
         scanf("%d",&select);
@@ -542,22 +542,25 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
             case 1: if(!isEmergency)
                         isLate = true;
                     else
-                        printf("Nao pode ser de emergencia e atrasado !\n");
+                        mensagem_erro("Nao pode ser de emergencia e atrasado !\n");
                     break;
                     
             case 2: if(!isLate || !isWaiting)
                         isEmergency = true;
-                    else    
-                        printf("Nao pode ser de emergencia e atrasado ou emergencia e aguardando\n");
+                    else
+                        mensagem_erro("Nao pode ser de emergencia e atrasado ou emergencia e aguardando\n");
                     break;
 
             case 3: if(!isEmergency)
                         isWaiting = true;
                     else
-                        printf("Nao pode ser de emergencia e em espera!\n"); 
+                        mensagem_erro("Nao pode ser de emergencia e em espera!\n");
                     break;
 
-            case 4: landed = true;
+            case 4: if(isEmergency && isLate)
+                        landed = true;
+                    else
+                        mensagem_erro("Nao pode ser pouso com emergencia E atraso!\n");
                     break;
         }
         printf("\nBuscar por: \n");
@@ -570,9 +573,9 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
         if(landed)
             printf("===> Pousados\n");
 
-    }while(select != -1 || (!landed && !isWaiting && !isEmergency));
+    }while(select != -1 || (!landed && !isWaiting && !isEmergency && !isLate));
 
-    result = buscaFiltro(esperas,emergencias,pousos,isLate,isEmergency,&hora_atual,isWaiting,landed);
-
+    result = buscaFiltro(emergencias,esperas,hora_atual,pousos,isLate,isEmergency,isWaiting,landed,tempoPouso);
+    imprimeFila(result,false);
 
 }

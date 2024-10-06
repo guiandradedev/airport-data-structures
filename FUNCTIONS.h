@@ -20,6 +20,8 @@ bool existe_fila(Fila *aux_fila, char *codigo);
 Voo* busca_fila(Fila *fila, char *codigo);
 void animacao();
 void desenharAviao(int espacos, int linhas_visiveis);
+Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado,int tempoPouso);
+Fila* buscaAtrasado(Fila* filaDeBusca,Fila* filaAuxiliar, Fila*resultado,Data* hora_simulada);
 
 
 // Funcoes
@@ -152,42 +154,81 @@ Voo* busca_fila(Fila *fila, char *codigo) {
     return voo;
 }
 
-Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado){
+Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado,int tempoPouso){
     Fila* resultado = CriaFila();
     Fila* filaAuxiliar = CriaFila();
+    Data hora_simulada = *hora_atual;
+    hora_simulada.minuto += tempoPouso; 
+    Voo voo_retirado;
 
-    if((!ehEmergencia && ehPousado && ehAtrasado) || 
-       (!ehEmergencia && !ehPousado && ehEspera && ehAtrasado)  || 
-       (ehEmergencia && ehPousado && !ehEspera && !ehAtrasado)) //existe pelo menos 2 seletores
-    {
-        if(ehEspera && ehAtrasado){
-
+     if((!ehEmergencia && ehAtrasado && (ehPousado^ehEspera))|| (ehEmergencia && ehPousado && !ehEspera && !ehAtrasado)) //existe pelo menos 2 seletores
+     {
+        if(ehEspera && ehAtrasado){ 
+            resultado = buscaAtrasado(esperas,filaAuxiliar,resultado,&hora_simulada);
+            return resultado;
         }
         if(ehPousado && ehAtrasado){
-
+            resultado = buscaAtrasado(pousos,filaAuxiliar,resultado,&hora_simulada);
+            return resultado;
         }
-        if (ehEmergencia && ehAtrasado){
-
+        if(ehPousado && ehEmergencia){ 
+            while(!VaziaFila(pousos)){
+                voo_retirado = RetiraFila(pousos);
+                InsereFila(filaAuxiliar,voo_retirado);
+                if(voo_retirado.check_hora == -1)
+                    InsereFila(resultado,voo_retirado);
+            }
+            pousos->ini = filaAuxiliar->ini;
+            pousos->fim = filaAuxiliar->fim;
+            free(filaAuxiliar);
+            return resultado;
         }
+
     } else  //apenas 1 
-    {
-        if(ehEmergencia){
-
+     {
+        if(ehEmergencia){       
+           resultado->ini = emergencias->ini;
+           resultado->fim = emergencias->fim;
+           return resultado;
         }
         if(ehAtrasado){
+            resultado = buscaAtrasado(esperas,filaAuxiliar,resultado,&hora_simulada);
 
+            return resultado;
+        
         }
         if(ehEspera){
-
+           resultado->ini = esperas->ini;
+           resultado->fim = esperas->fim;
+           return resultado;
         }
-        if(ehPousado){
-
+        if(ehPousado){      
+           resultado->ini = pousos->ini;
+           resultado->fim = pousos->fim;
+           return resultado;
         }
+     }
+    // return resultado;
+}
+
+Fila* buscaAtrasado(Fila* filaDeBusca,Fila* filaAuxiliar, Fila*resultado,Data* hora_simulada){
+    Voo voo_retirado;
+    while(!VaziaFila(filaDeBusca)){
+        voo_retirado = RetiraFila(filaDeBusca);
+        if((check_hora(voo_retirado.previsao_chegada,*hora_simulada)== 0) && voo_retirado.check_hora != -1){
+            InsereFila(resultado,voo_retirado);
+        }
+            InsereFila(filaAuxiliar,voo_retirado);
     }
-    
+    filaDeBusca->ini = filaAuxiliar->ini;
+    filaDeBusca->fim = filaAuxiliar->fim;
+    free(filaAuxiliar);
+    return resultado;
 }
 
 void animacao(){
+    system("color 1F");
+
     for (int i = 0; i < LARGURA; i++) {
     printf("\033[H\033[J");
     
@@ -200,10 +241,13 @@ void animacao(){
     fflush(stdout);
     usleep(100000);
     }
+    system("color 07");
+
 }
 
 void desenharAviao(int espacos, int linhas_visiveis) {
     // Desenha o avião com um deslocamento
+
     if (linhas_visiveis >= 1) {
         for (int i = 0; i < espacos; i++) printf(" ");
         printf("            ______\n");
@@ -236,6 +280,7 @@ void desenharAviao(int espacos, int linhas_visiveis) {
         for (int i = 0; i < espacos; i++) printf(" ");
         printf("                      =  ===(_________D\n");
     }
+    
 }
 
 #endif // STRUCTS_H_INCLUDED
