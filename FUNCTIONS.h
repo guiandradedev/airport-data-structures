@@ -152,6 +152,14 @@ Voo* busca_fila(Fila *fila, char *codigo) {
     return voo;
 }
 
+Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado){
+    Fila* resultado = CriaFila();
+    if(ehEmergencia){
+
+    }
+    
+}
+
 void animacao(){
     for (int i = 0; i < LARGURA; i++) {
     printf("\033[H\033[J");

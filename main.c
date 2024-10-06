@@ -28,6 +28,7 @@ void MudaTempo(int *TempoPouso);
 void aviao(Data *data);
 void header(Data *data,int tempo);
 void menu(Data hora_atual, int tempo);
+void menuFiltro(Fila *esperas, Fila *emergencias, Fila* pousos, Data *hora_atual);
 
 int main() {
     // Definição de variaveis
@@ -96,13 +97,16 @@ int main() {
             MudaTempo(&TempoPouso);
             break;
         case 11:
+            menuFiltro(esperas,emergencias,pousos,&hora_atual);
+            break;
+        case 12:
             break;
         default:
             mensagem_erro("Comando incorreto.");
             fimFuncao();
             break;
         }
-    }while (op != 11);
+    }while (op != 12);
 
     animacao();
 
@@ -191,8 +195,8 @@ void menu(Data hora_atual, int tempo){
     printf("[2]  - Autorizar pouso              [8]  - Alterar estado de um voo\n");
     printf("[3]  - Relatorio das aeronaves      [9]  - Estatisticas do aeroporto\n");
     printf("[4]  - Imprimir proxima aeronave    [10] - Alterar o clima\n");
-    printf("[5]  - Imprimir aeronaves pousadas  [11] - Finalizar o sistema\n");
-    printf("[6]  - Simular o pouso\n");
+    printf("[5]  - Imprimir aeronaves pousadas  [11] - Filtrar Voos\n");
+    printf("[6]  - Simular o pouso              [12] - Sair do Sistema\n");
     printf("\nOpcao: ");
 }
 
@@ -519,10 +523,56 @@ void estatisticas(Fila *pousos){
     fimFuncao();
 }
 
-void menuRelatorio(){
-    printf("\nEscolha um filtro:");
-    printf("\n[1]-Voos ja atrasados");
-    printf("\n[2]-Voos em estado de emergencia")
-    printf("\n[3]-Voos em espera");
-    printf("\n[4]-Voos ");
+void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
+    bool isLate = false;
+    bool isEmergency = false;
+    bool isNormal = false;
+    bool landed = false;
+    Fila *result = CriaFila();
+    int select;
+    do{
+        printf("\n Faca a escolha dos Filtros, quando nao quiser mais filtros digite -1:");
+        printf("\n[1]-Voos ja atrasados para o pouso");
+        printf("\n[2]-Voos em estado de emergencia para pousar");
+        printf("\n[3]-Voos em espera para pouso");
+        printf("\n[4]-Voos pousados\n");
+        scanf("%d",&select);
+
+        switch(select){
+            case 1: if(!isEmergency)
+                        isLate = true;
+                    else
+                        printf("Nao pode ser de emergencia e atrasado !\n");
+                    break;
+                    
+            case 2: if(!isLate || !isNormal)
+                        isEmergency = true;
+                    else    
+                        printf("Nao pode ser de emergencia e atrasado ou emergencia e normal\n");
+                    break;
+
+            case 3: if(!isEmergency)
+                        isNormal = true;
+                    else
+                        printf("Nao pode ser de emergencia e em espera!\n"); 
+                    break;
+
+            case 4: landed = true;
+                    break;
+        }
+        printf("\nBuscar por: \n");
+        if(isLate)
+            printf("===> Atrasados\n");
+        if(isEmergency)
+            printf("===> Emergencias\n");
+        if(isNormal)
+            printf("===> em Espera\n");
+        if(landed)
+            printf("===> Pousados\n");
+
+    }while(select != -1 || (!landed && !isNormal && !isEmergency));
+
+    result = buscaFiltro(esperas,emergencias,pousos,isLate,isEmergency,&hora_atual,isNormal,landed);
+
+
 }
