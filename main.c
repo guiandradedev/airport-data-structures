@@ -526,7 +526,7 @@ void estatisticas(Fila *pousos){
 void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
     bool isLate = false;
     bool isEmergency = false;
-    bool isNormal = false;
+    bool isWaiting = false;
     bool landed = false;
     Fila *result = CriaFila();
     int select;
@@ -545,14 +545,14 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
                         printf("Nao pode ser de emergencia e atrasado !\n");
                     break;
                     
-            case 2: if(!isLate || !isNormal)
+            case 2: if(!isLate || !isWaiting)
                         isEmergency = true;
                     else    
-                        printf("Nao pode ser de emergencia e atrasado ou emergencia e normal\n");
+                        printf("Nao pode ser de emergencia e atrasado ou emergencia e aguardando\n");
                     break;
 
             case 3: if(!isEmergency)
-                        isNormal = true;
+                        isWaiting = true;
                     else
                         printf("Nao pode ser de emergencia e em espera!\n"); 
                     break;
@@ -565,14 +565,14 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual){
             printf("===> Atrasados\n");
         if(isEmergency)
             printf("===> Emergencias\n");
-        if(isNormal)
+        if(isWaiting)
             printf("===> em Espera\n");
         if(landed)
             printf("===> Pousados\n");
 
-    }while(select != -1 || (!landed && !isNormal && !isEmergency));
+    }while(select != -1 || (!landed && !isWaiting && !isEmergency));
 
-    result = buscaFiltro(esperas,emergencias,pousos,isLate,isEmergency,&hora_atual,isNormal,landed);
+    result = buscaFiltro(esperas,emergencias,pousos,isLate,isEmergency,&hora_atual,isWaiting,landed);
 
 
 }

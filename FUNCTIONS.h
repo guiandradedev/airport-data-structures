@@ -154,8 +154,35 @@ Voo* busca_fila(Fila *fila, char *codigo) {
 
 Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado){
     Fila* resultado = CriaFila();
-    if(ehEmergencia){
+    Fila* filaAuxiliar = CriaFila();
 
+    if((!ehEmergencia && ehPousado && ehAtrasado) || 
+       (!ehEmergencia && !ehPousado && ehEspera && ehAtrasado)  || 
+       (ehEmergencia && ehPousado && !ehEspera && !ehAtrasado)) //existe pelo menos 2 seletores
+    {
+        if(ehEspera && ehAtrasado){
+
+        }
+        if(ehPousado && ehAtrasado){
+
+        }
+        if (ehEmergencia && ehAtrasado){
+
+        }
+    } else  //apenas 1 
+    {
+        if(ehEmergencia){
+
+        }
+        if(ehAtrasado){
+
+        }
+        if(ehEspera){
+
+        }
+        if(ehPousado){
+
+        }
     }
     
 }
