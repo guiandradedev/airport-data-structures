@@ -557,7 +557,7 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, 
         if(isWaiting)
             printf("===> em Espera\n");
         if(landed)
-            printf("===> Pousados\n");
+            printf("===> Pousados\n");a
 
     }while(select != -1 || (!landed && !isWaiting && !isEmergency && !isLate));
 
