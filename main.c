@@ -225,30 +225,19 @@ void aviao(Data *data){
 
 void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_atual, Fila *pousos, int TempoPouso) {
     Voo voo;
-    char codigo[5];
+    char *codigo;
     bool existe = false;
 
     header(hora_atual, TempoPouso);
     fflush(stdin);
 
     do {
-        printf("Insira o codigo do voo (4 caracteres comecando com V):\n");
-        fgets(codigo, sizeof(codigo), stdin);
+        codigo = insere_codigo();
 
         existe = codigo_existe(esperas,emergencias,pousos,codigo);
 
         if(existe){
             mensagem_erro("Este codigo ja existe");
-        }
-
-        if (strlen(codigo) != 4) {
-            mensagem_erro("O codigo deve ter 4 caracteres!");
-        }
-
-        codigo[0] = toupper(codigo[0]);
-
-        if(codigo[0] != 'V') {
-            mensagem_erro("O codigo deve comecar com V!");
         }
     } while (strlen(codigo) != 4 || existe != false || codigo[0] != 'V');
 
@@ -444,11 +433,8 @@ char* insere_codigo(){
     do {
         fflush(stdin);
         printf("Insira o codigo do voo (4 caracteres comecando com V):\n");
-        fgets(codigo, 5, stdin);
-
-        if (strlen(codigo) != 4) {
-            mensagem_erro("O codigo deve ter 4 caracteres!");
-        }
+        scanf("%[^\n]s",codigo);
+        fflush(stdin);
 
         codigo[0] = toupper(codigo[0]);
 
