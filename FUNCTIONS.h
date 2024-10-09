@@ -1,5 +1,5 @@
 #ifndef FUNCTIONS_H_INCLUDED
-#define FUNCTIONS_H_INCLUDED 
+#define FUNCTIONS_H_INCLUDED
 
 #define LARGURA 40
 #define TAMANHO_AVIAO 8
@@ -24,7 +24,7 @@ void imprimirVoo(Voo voo, bool mostra_check_hora) {
             }else{
                 mensagem_amarela("Pouso atrasado");
             }
-        }  
+        }
     }
 
 }
@@ -129,7 +129,7 @@ Voo* busca_fila(Fila *fila, char *codigo) {
     if(VaziaFila(fila)){
         fila->ini = aux->ini;
         fila->fim = aux->fim;
-    } 
+    }
     free(aux);
     return voo;
 }
@@ -137,12 +137,12 @@ Voo* busca_fila(Fila *fila, char *codigo) {
 Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado,int tempoPouso){
     Fila* resultado = CriaFila();
     Data hora_simulada = *hora_atual;
-    hora_simulada.minuto += tempoPouso; 
+    hora_simulada.minuto += tempoPouso;
     Voo voo_retirado;
 
      if((!ehEmergencia && ehAtrasado && (ehPousado^ehEspera))|| (ehEmergencia && ehPousado && !ehEspera && !ehAtrasado)) //existe pelo menos 2 seletores
      {
-        if(ehEspera && ehAtrasado){ 
+        if(ehEspera && ehAtrasado){
             resultado = buscaAtrasado(esperas,&hora_simulada);
             return resultado;
         }
@@ -150,7 +150,7 @@ Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pouso
             resultado = buscaAtrasado(pousos,&hora_simulada);
             return resultado;
         }
-        if(ehPousado && ehEmergencia){ 
+        if(ehPousado && ehEmergencia){
             Fila* filaAuxiliar = CriaFila();
             while(!VaziaFila(pousos)){
                 voo_retirado = RetiraFila(pousos);
@@ -164,9 +164,9 @@ Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pouso
             return resultado;
         }
 
-    } else  //apenas 1 
+    } else  //apenas 1
      {
-        if(ehEmergencia){       
+        if(ehEmergencia){
            resultado->ini = emergencias->ini;
            resultado->fim = emergencias->fim;
            return resultado;
@@ -175,14 +175,14 @@ Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pouso
             resultado = concatenaFilas(buscaAtrasado(esperas,&hora_simulada),
                                         buscaAtrasado(pousos,&hora_simulada));
             return resultado;
-        
+
         }
         if(ehEspera){
            resultado->ini = esperas->ini;
            resultado->fim = esperas->fim;
            return resultado;
         }
-        if(ehPousado){      
+        if(ehPousado){
            resultado->ini = pousos->ini;
            resultado->fim = pousos->fim;
            return resultado;
@@ -213,18 +213,18 @@ void animacao(){
 
     for (int i = 0; i < LARGURA; i++) {
     printf("\033[H\033[J");
-    
+
     int linhas_visiveis = TAMANHO_AVIAO;
     if (i > LARGURA - TAMANHO_AVIAO) {
         linhas_visiveis = TAMANHO_AVIAO - (i - (LARGURA - TAMANHO_AVIAO));
     }
-    
+
     desenharAviao(i, linhas_visiveis);
     fflush(stdout);
     usleep(100000);
     }
     system("color 07");
-
+    system("cls");
 }
 
 void desenharAviao(int espacos, int linhas_visiveis) {
@@ -262,7 +262,7 @@ void desenharAviao(int espacos, int linhas_visiveis) {
         for (int i = 0; i < espacos; i++) printf(" ");
         printf("                      =  ===(_________D\n");
     }
-    
+
 }
 
 #endif // STRUCTS_H_INCLUDED
