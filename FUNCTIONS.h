@@ -136,7 +136,6 @@ Voo* busca_fila(Fila *fila, char *codigo) {
 
 Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado,int tempoPouso){
     Fila* resultado = CriaFila();
-    Fila* filaAuxiliar = CriaFila();
     Data hora_simulada = *hora_atual;
     hora_simulada.minuto += tempoPouso; 
     Voo voo_retirado;
@@ -144,14 +143,15 @@ Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pouso
      if((!ehEmergencia && ehAtrasado && (ehPousado^ehEspera))|| (ehEmergencia && ehPousado && !ehEspera && !ehAtrasado)) //existe pelo menos 2 seletores
      {
         if(ehEspera && ehAtrasado){ 
-            resultado = buscaAtrasado(esperas,filaAuxiliar,resultado,&hora_simulada);
+            resultado = buscaAtrasado(esperas,&hora_simulada);
             return resultado;
         }
         if(ehPousado && ehAtrasado){
-            resultado = buscaAtrasado(pousos,filaAuxiliar,resultado,&hora_simulada);
+            resultado = buscaAtrasado(pousos,&hora_simulada);
             return resultado;
         }
         if(ehPousado && ehEmergencia){ 
+            Fila* filaAuxiliar = CriaFila();
             while(!VaziaFila(pousos)){
                 voo_retirado = RetiraFila(pousos);
                 InsereFila(filaAuxiliar,voo_retirado);
@@ -172,11 +172,8 @@ Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pouso
            return resultado;
         }
         if(ehAtrasado){
-            Fila* aux = CriaFila();
-            resultado = concatenaFilas(buscaAtrasado(esperas,filaAuxiliar,resultado,&hora_simulada),
-                                        buscaAtrasado(pousos,filaAuxiliar,aux,&hora_simulada));
-            liberaFila(aux);
-
+            resultado = concatenaFilas(buscaAtrasado(esperas,&hora_simulada),
+                                        buscaAtrasado(pousos,&hora_simulada));
             return resultado;
         
         }
@@ -194,8 +191,10 @@ Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pouso
     // return resultado;
 }
 
-Fila* buscaAtrasado(Fila* filaDeBusca,Fila* filaAuxiliar, Fila*resultado,Data* hora_simulada){
+Fila* buscaAtrasado(Fila* filaDeBusca,Data* hora_simulada){
     Voo voo_retirado;
+    Fila* filaAuxiliar= CriaFila();
+    Fila* resultado = CriaFila();
     while(!VaziaFila(filaDeBusca)){
         voo_retirado = RetiraFila(filaDeBusca);
         if((check_hora(voo_retirado.previsao_chegada,*hora_simulada)== 0) && voo_retirado.check_hora != -1){

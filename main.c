@@ -58,6 +58,7 @@ int main() {
     TempoPouso = geraTempoPouso();
 
     do{
+        op=0;
         menu(hora_atual,TempoPouso);
         scanf("%d",&op);
 
@@ -547,7 +548,7 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, 
                         mensagem_erro("Nao pode ser de emergencia e em espera!\n");
                     break;
 
-            case 4: if(isEmergency && isLate)
+            case 4: if(!isEmergency && !isLate)
                         landed = true;
                     else
                         mensagem_erro("Nao pode ser pouso com emergencia E atraso!\n");
@@ -568,4 +569,5 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, 
     result = buscaFiltro(emergencias,esperas,hora_atual,pousos,isLate,isEmergency,isWaiting,landed,tempoPouso);
     imprimeFila(result,false);
 
+    fimFuncao();
 }

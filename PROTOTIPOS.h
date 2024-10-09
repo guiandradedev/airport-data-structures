@@ -18,6 +18,6 @@ Voo* busca_fila(Fila *fila, char *codigo);
 void animacao();
 void desenharAviao(int espacos, int linhas_visiveis);
 Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pousos, bool ehAtrasado, bool ehEmergencia, bool ehEspera, bool ehPousado,int tempoPouso);
-Fila* buscaAtrasado(Fila* filaDeBusca,Fila* filaAuxiliar, Fila*resultado,Data* hora_simulada);
+Fila* buscaAtrasado(Fila* filaDeBusca,Data* hora_simulada);
 
 #endif // STRUCTS_H_INCLUDED
