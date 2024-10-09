@@ -192,7 +192,10 @@ Fila* buscaFiltro(Fila *emergencias, Fila *esperas,Data *hora_atual, Fila *pouso
            return resultado;
         }
         if(ehAtrasado){
-            resultado = buscaAtrasado(esperas,filaAuxiliar,resultado,&hora_simulada);
+            Fila* aux = CriaFila();
+            resultado = cocatenaFilas(buscaAtrasado(esperas,filaAuxiliar,resultado,&hora_simulada),
+                                        buscaAtrasado(pousos,filaAuxiliar,aux,&hora_simulada));
+            liberaFila(aux);
 
             return resultado;
         

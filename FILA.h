@@ -99,4 +99,25 @@ Fila* liberaFila (Fila* f)
     return NULL;
 }
 
+Fila* concatenaFilas(Fila* f1, Fila*f2){
+    Fila* filaResultado = CriaFila();
+    Fila* fila_aux = CriaFila();
+    Voo voo_aux;
+    while(!VaziaFila(f1)) {
+        voo_aux = RetiraFila(f1);
+        InsereFila(filaResultado, voo_aux);
+        InsereFila(fila_aux, voo_aux);
+    }
+
+    f1->ini = fila_aux->ini;
+    f1->fim = fila_aux->fim;
+
+    liberaFila(fila_aux);
+
+    filaResultado->fim->prox = f2->ini;
+    filaResultado->fim = f2->fim;
+
+    return filaResultado;
+}
+
 #endif // FILA_H_INCLUDED

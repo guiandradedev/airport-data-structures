@@ -35,6 +35,7 @@ int main() {
     Fila* emergencias = CriaFila();
     Fila* esperas = CriaFila();
     Fila* pousos = CriaFila();
+
     Data hora_atual;
     int semente, aux, op = 0;
     int TempoPouso = NULL;
@@ -557,7 +558,7 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, 
         if(isWaiting)
             printf("===> em Espera\n");
         if(landed)
-            printf("===> Pousados\n");a
+            printf("===> Pousados\n");
 
     }while(select != -1 || (!landed && !isWaiting && !isEmergency && !isLate));
 
