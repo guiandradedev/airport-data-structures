@@ -122,7 +122,7 @@ int main() {
     liberaFila(pousos);
 
     return 0;
-} 
+}
 
 
 int geraTempoPouso(){
@@ -137,9 +137,9 @@ int geraTempoPouso(){
     } else if (r < 75) {
         return 15; // 30% de chance
     } else if (r < 90) {
-        return 20; // 15% de chance 
+        return 20; // 15% de chance
     } else {
-        return 30; // 10% de chance 
+        return 30; // 10% de chance
     }
 
 }
@@ -173,7 +173,7 @@ void MudaTempo(int *TempoPouso){
     do{
         scanf("%d", &op);
     } while (op < 1 || op >4);
-    
+
     switch (op){
         case 1:
             *TempoPouso = 10;
@@ -256,14 +256,14 @@ void inserir_voo(Fila *esperas, Fila *emergencias, int emergencia, Data *hora_at
             mensagem_erro("O numero de passageiros deve ser maior que 0");
         }
     } while(voo.num_passageiros <= 0);
-    
+
     voo.previsao_chegada = gerarData(0,0);
     voo.horario_chegada.hora = -1;
     voo.horario_chegada.minuto = -1;
 
     printf("Previsao de chegada:");
     printData(voo.previsao_chegada);
-    
+
     printf("Eh pouso de emergencia? %c\n", emergencia == 0 ? 'S' : 'N');
 
     if(emergencia == 0) {
@@ -284,7 +284,7 @@ void autorizar_pouso(Fila *esperas, Fila *emergencias, Fila *pousos, Data *hora_
             voo_removido.horario_chegada.minuto += TempoPouso;
             voo_removido.horario_chegada = verificaHora(voo_removido.horario_chegada);
             *hora_atual = voo_removido.horario_chegada;
-            
+
             voo_removido.check_hora = check_hora(voo_removido.previsao_chegada, voo_removido.horario_chegada);
         } else {
             mensagem_erro("Nao existem voos em espera para pousar!");
@@ -345,7 +345,7 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
         qtd_de_voos--;
         aux = aux->prox;
     }
-    
+
     aux = esperas->ini;
     if(aux != NULL && qtd_de_voos != 0) {
         existe_voo = true;
@@ -361,7 +361,7 @@ void simular_voos(Fila*esperas, Fila*emergencias,Data* hora_atual, int minutos_i
 
         printf("O voo pousaria as: ");
         printData(hora_simulada);
-        
+
         if(check_hora(aux->voo.previsao_chegada, hora_simulada) == 0){
             mensagem_amarela("O voo vai estar atrasado");
         }else{
@@ -446,7 +446,7 @@ char* insere_codigo(){
         if(codigo[0] != 'V') {
             mensagem_erro("O codigo deve comecar com V!");
         }
-        
+
         if (strlen(codigo) != 4) {
             mensagem_erro("O codigo deve ter 4 caracteres!");
         }
@@ -456,7 +456,7 @@ char* insere_codigo(){
 
 void alterar_status(Fila *esperas, Fila *emergencias){
     char *codigo;
-    bool achou = false; 
+    bool achou = false;
     Fila *aux = CriaFila();
     codigo = insere_codigo();
 
@@ -468,13 +468,13 @@ void alterar_status(Fila *esperas, Fila *emergencias){
             InsereFila(aux, RetiraFila(esperas));
         }
     }
-    
+
     if(achou){
         mensagem_sucesso("Voo transferido para emergencia com sucesso");
     }else{
         mensagem_erro("Voo nao encontrado ou ja pousou");
     }
-    
+
     if(VaziaFila(esperas)){
         esperas->ini = aux->ini;
         esperas->fim = aux->fim;
@@ -535,7 +535,7 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, 
                     else
                         mensagem_erro("Nao pode ser de emergencia e atrasado !\n");
                     break;
-                    
+
             case 2: if(!isLate || !isWaiting)
                         isEmergency = true;
                     else
@@ -548,7 +548,7 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, 
                         mensagem_erro("Nao pode ser de emergencia e em espera!\n");
                     break;
 
-            case 4: if(!isEmergency && !isLate)
+            case 4: if((!isEmergency^!isLate) || (!isEmergency&&!isLate))
                         landed = true;
                     else
                         mensagem_erro("Nao pode ser pouso com emergencia E atraso!\n");
