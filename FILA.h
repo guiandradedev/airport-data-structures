@@ -100,8 +100,24 @@ Fila* liberaFila (Fila* f)
 }
 
 Fila* concatenaFilas(Fila* f1, Fila*f2){
-    Fila* filaResultado = CriaFila();
-    Fila* fila_aux = CriaFila();
+    Fila* filaResultado = CriaFila(); 
+    No *aux;
+
+    aux=f1->ini;
+    while(aux!=NULL)
+    {
+        InsereFila(filaResultado,aux->voo);
+        aux=aux->prox;
+    }
+    aux=f2->ini;
+    while(aux!=NULL)
+    {
+        InsereFila(filaResultado,aux->voo);
+        aux=aux->prox;
+    }
+    printf("\n\n\tTESTE\n\n");
+    imprimeFila(filaResultado,false);
+    /*Fila* fila_aux = CriaFila();
     Voo voo_aux;
     while(!VaziaFila(f1)) {
         voo_aux = RetiraFila(f1);
@@ -110,12 +126,12 @@ Fila* concatenaFilas(Fila* f1, Fila*f2){
     }
 
     f1->ini = fila_aux->ini;
-    f1->fim = fila_aux->fim;
+    f1->fim = fila_aux->fim;*/
 
-    liberaFila(fila_aux);
+    //liberaFila(fila_aux);
 
-    filaResultado->fim->prox = f2->ini;
-    filaResultado->fim = f2->fim;
+   // filaResultado->fim->prox = f2->ini;
+   // filaResultado->fim = f2->fim;
 
     return filaResultado;
 }

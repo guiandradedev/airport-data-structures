@@ -4,8 +4,10 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
+#include <unistd.h>
 #include "colors.h"
 #include "STRUCTS.h"
+#include "PROTOTIPOS.h"
 #include "FILA.h"
 #include "FUNCTIONS.h"
 
@@ -38,12 +40,12 @@ int main() {
 
     Data hora_atual;
     int semente, aux, op = 0;
-    int TempoPouso = NULL;
+    int TempoPouso = -1;
 
     animacao();
 
     do {
-        header(NULL,NULL);
+        header(NULL,TempoPouso);
         printf("Para comecar, insira a semente: ");
         scanf("%d", &semente);
 
@@ -138,10 +140,11 @@ int geraTempoPouso(){
     } else {
         return 30; // 10% de chance 
     }
+
 }
 
 void print_clima(int TempoPouso){
-    if(TempoPouso == NULL){
+    if(TempoPouso == -1){
         return;
     }else if(TempoPouso == 10){
         mensagem_sucesso("Clima esta bom, com tempo medio de pouso de 10 minutos\n");
