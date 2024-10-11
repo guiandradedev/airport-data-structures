@@ -16,12 +16,6 @@ Fila* liberaFila (Fila* f) LIBERA A FILA
 void imprimeFila (Fila* f, int check_hora)IMPRIME A FILA
 */
 
-typedef struct fila
-{
-    No * ini;
-    No * fim;
-} Fila;
-
 int VaziaFila (Fila* f)
 {
     if (f->ini==NULL) return 1;
@@ -78,9 +72,9 @@ Voo RetiraFila (Fila* f)
 void imprimeFila (Fila* f, bool mostra_check_hora)
 {
     No* q;
-    printf("\n\t\t");
+    printf("\n");
     if(VaziaFila(f)){
-        printf("A fila esta vazia \n");
+        mensagem_erro("Nao existem voos nessa fila");
         
     }else{
         for (q=f->ini; q!=NULL; q=q->prox)
@@ -103,6 +97,45 @@ Fila* liberaFila (Fila* f)
     }
     free(f);
     return NULL;
+}
+
+Fila* concatenaFilas(Fila* f1, Fila*f2){
+    Fila* filaResultado = CriaFila(); 
+    No *aux;
+    // printf("\n\n\tTESTE1\n\n");
+    // imprimeFila(f1,false);
+    // imprimeFila(f2,false);
+    aux=f1->ini;
+    while(aux!=NULL)
+    {
+        InsereFila(filaResultado,aux->voo);
+        aux=aux->prox;
+    }
+    aux=f2->ini;
+    while(aux!=NULL)
+    {
+        InsereFila(filaResultado,aux->voo);
+        aux=aux->prox;
+    }
+    // printf("\n\n\tTESTE\n\n");
+    //imprimeFila(filaResultado,false);
+    /*Fila* fila_aux = CriaFila();
+    Voo voo_aux;
+    while(!VaziaFila(f1)) {
+        voo_aux = RetiraFila(f1);
+        InsereFila(filaResultado, voo_aux);
+        InsereFila(fila_aux, voo_aux);
+    }
+
+    f1->ini = fila_aux->ini;
+    f1->fim = fila_aux->fim;*/
+
+    //liberaFila(fila_aux);
+
+   // filaResultado->fim->prox = f2->ini;
+   // filaResultado->fim = f2->fim;
+
+    return filaResultado;
 }
 
 #endif // FILA_H_INCLUDED
