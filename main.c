@@ -533,25 +533,25 @@ void menuFiltro(Fila *esperas, Fila *emergencias,Fila*pousos, Data *hora_atual, 
             case 1: if(!isEmergency)
                         isLate = true;
                     else
-                        mensagem_erro("Nao pode ser de emergencia e atrasado !\n");
+                        mensagem_erro("Arranjo invalido! \n");
                     break;
 
-            case 2: if(!isLate || !isWaiting)
+            case 2: if(!isLate && !isWaiting)
                         isEmergency = true;
                     else
-                        mensagem_erro("Nao pode ser de emergencia e atrasado ou emergencia e aguardando\n");
+                        mensagem_erro("Arranjo invalido!\n");
                     break;
 
-            case 3: if(!isEmergency)
+            case 3: if(!isEmergency && !landed)
                         isWaiting = true;
                     else
-                        mensagem_erro("Nao pode ser de emergencia e em espera!\n");
+                        mensagem_erro("Arranjo invalido!\n");
                     break;
 
-            case 4: if((!isEmergency^!isLate) || (!isEmergency&&!isLate))
+            case 4: if(((!isEmergency^!isLate) || (!isEmergency&&!isLate))&& !isWaiting)
                         landed = true;
                     else
-                        mensagem_erro("Nao pode ser pouso com emergencia E atraso!\n");
+                        mensagem_erro("Arranjo invalido!\n");
                     break;
         }
         printf("\nBuscar por: \n");
